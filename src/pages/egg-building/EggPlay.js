@@ -90,7 +90,10 @@ function EggPlay({ onOver }) {
       } else if (selectFloor - safeFloor - 1 + testTime + 1 > 14) {
         // 扔的步子太大，让它碎
         eggConfirm(true, selectFloor);
-      } else {
+      } else if (eggCount>1 && dangerFloor - selectFloor - 1 <= selectFloor - safeFloor){
+        // 后面的比前面的还少了，不如碎了吧。比如90->95的时候，95不碎的话后面本来要投99，但是一共就100，两个蛋很容易就用少次数解决了，不会到达14，所以当101-95 - 1 <= 95-90的时候就该碎碎了
+        eggConfirm(true, selectFloor);
+      }else{
         // 步子小，就先不碎吧
         eggConfirm(false, selectFloor);
       }
