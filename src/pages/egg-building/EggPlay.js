@@ -10,7 +10,7 @@ import {
   Cascader,
   Tooltip, Form, Space,
 } from 'antd';
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const GAME_STATE = {
   playing: 0,
@@ -26,6 +26,8 @@ function EggPlay({ onOver }) {
   const [dangerFloor, setDangerFloor] = useState(101);
   const [gameState, setGameState] = useState(GAME_STATE.playing);
   const [log, setLog] = useState([]);
+  const logRef = useRef();
+  const inputNumberRef = useRef();
   const reset = () => {
     setEggCount(2);
     setTestTime(0);
@@ -90,14 +92,18 @@ function EggPlay({ onOver }) {
       } else if (selectFloor - safeFloor - 1 + testTime + 1 > 14) {
         // 扔的步子太大，让它碎
         eggConfirm(true, selectFloor);
-      } else if (eggCount>1 && dangerFloor - selectFloor - 1 <= selectFloor - safeFloor){
+      } else if (eggCount > 1 && dangerFloor - selectFloor - 1 <= selectFloor - safeFloor) {
         // 后面的比前面的还少了，不如碎了吧。比如90->95的时候，95不碎的话后面本来要投99，但是一共就100，两个蛋很容易就用少次数解决了，不会到达14，所以当101-95 - 1 <= 95-90的时候就该碎碎了
         eggConfirm(true, selectFloor);
-      }else{
+      } else {
         // 步子小，就先不碎吧
         eggConfirm(false, selectFloor);
       }
     }
+
+    form.resetFields(['selectFloor']);
+    inputNumberRef.current.focus();
+    // logRef.scrollTop = logRef.scrollHeight;
   }
   const onFinishFailed = (b) => {
     console.log('onFinishFailed', b);
@@ -122,7 +128,7 @@ function EggPlay({ onOver }) {
                 { type: 'number', min: 1, max: 100 }
               ]}
             >
-              <InputNumber style={{ width: 80 }} />
+              <InputNumber style={{ width: 80 }} ref={inputNumberRef} />
             </Form.Item>
             <Button type="primary" htmlType="submit" disabled={gameState}>扔</Button>
           </Input.Group>
@@ -145,12 +151,12 @@ function EggPlay({ onOver }) {
         {gameState === GAME_STATE.overSuccess ? '成功了，你测好了鸡蛋！' : '失败了，你鸡蛋都用完了还没测出鸡蛋从哪楼掉下去正好会烂掉'}
       </div>}
       <div>历史记录：
-        <div style={{
+        <div ref={logRef} style={{
           maxHeight: 200,
           fontSize: 16,
           'overflow-y': 'scroll',
-        }}>{log.map(({ broken, floor }) => {
-          return <div>{`${floor}楼扔，${broken ? '碎了' : '安全'}`}</div>
+        }}>{log.reverse().map(({ broken, floor }, idx) => {
+          return <div key={idx}>{`${floor}楼扔，${broken ? '碎了' : '安全'}`}</div>
         })}</div>
       </div>
     </div>
