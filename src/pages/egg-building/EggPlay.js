@@ -155,7 +155,7 @@ function EggPlay({ onOver }) {
           maxHeight: 200,
           fontSize: 16,
           'overflow-y': 'scroll',
-        }}>{log.reverse().map(({ broken, floor }, idx) => {
+        }}>{[...log].reverse().map(({ broken, floor }, idx) => {
           return <div key={idx}>{`${floor}楼扔，${broken ? '碎了' : '安全'}`}</div>
         })}</div>
       </div>
