@@ -28,3 +28,11 @@ jobs:
         cache: 'npm'
     - run: npm i
     - run: CI=false && npm run build-deploy
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v1
+      with:
+        # Upload entire repository
+        path: './build'
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v1
